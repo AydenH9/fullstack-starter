@@ -7,6 +7,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import javax.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * Inventory Controller.
@@ -32,6 +35,16 @@ public class InventoryController {
   @GetMapping
   public List<Inventory> findInventories() {
     return this.inventoryDAO.findAll();
+  }
+
+  /**
+   * Create Inventory.
+   * @param inventory Inventory to Create.
+   * @return Created Inventory.
+   */
+  @PostMapping
+  public Inventory createInventory(@Valid @RequestBody Inventory inventory) {
+    return this.inventoryDAO.create(inventory);
   }
 }
 
