@@ -2,6 +2,7 @@ package com.starter.fullstack.dao;
 
 import com.starter.fullstack.api.Inventory;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Resource;
 import org.junit.After;
 import org.junit.Assert;
@@ -14,7 +15,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
-import java.util.Optional;
 
 /**
  * Test Inventory DAO.
@@ -66,7 +66,7 @@ public class InventoryDAOTest {
     Inventory actualInventory = this.inventoryDAO.create(inventory);
     Assert.assertNotNull(actualInventory);
     Assert.assertNotNull(actualInventory.getId());
-    Assert.assertNotNull("existing-id", actualInventory.getId());
+    Assert.assertNotEquals("existing-id", actualInventory.getId());
     Assert.assertEquals(NAME, actualInventory.getName());
     Assert.assertEquals(PRODUCT_TYPE, actualInventory.getProductType());
     Inventory savedInventory = this.mongoTemplate.findById(actualInventory.getId(), Inventory.class);
