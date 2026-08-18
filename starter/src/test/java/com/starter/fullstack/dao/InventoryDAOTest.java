@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
+import java.util.Optional;
 
 /**
  * Test Inventory DAO.
@@ -72,5 +73,33 @@ public class InventoryDAOTest {
     Assert.assertNotNull(savedInventory);
     Assert.assertEquals(NAME, savedInventory.getName());
     Assert.assertEquals(PRODUCT_TYPE, savedInventory.getProductType());
+  }
+
+  /**
+   * Test Delete method.
+   */
+  @Test
+  public void delete() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    inventory = this.mongoTemplate.save(inventory);
+    Optional<Inventory> deletedInventory =
+        this.inventoryDAO.delete(inventory.getId());
+    Assert.assertTrue(deletedInventory.isPresent());
+    Assert.assertEquals(inventory.getId(), deletedInventory.get().getId());
+    Inventory actualInventory =
+        this.mongoTemplate.findById(inventory.getId(), Inventory.class);
+    Assert.assertNull(actualInventory);
+  }
+
+  /**
+   * Test Delete method with an invalid ID.
+   */
+  @Test
+  public void deleteNotFound() {
+    Optional<Inventory> deletedInventory =
+        this.inventoryDAO.delete("INVALID ID");
+    Assert.assertFalse(deletedInventory.isPresent());
   }
 }
