@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 /**
  * Inventory Controller.
@@ -45,6 +46,16 @@ public class InventoryController {
   @PostMapping
   public Inventory createInventory(@Valid @RequestBody Inventory inventory) {
     return this.inventoryDAO.create(inventory);
+  }
+
+  /**
+   * Delete Inventory.
+   * @param id Inventory ID to Delete.
+   * @return Deleted Inventory.
+   */
+  @DeleteMapping
+  public Inventory deleteInventory(@RequestBody String id) {
+    return this.inventoryDAO.delete(id).orElse(null);
   }
 }
 
