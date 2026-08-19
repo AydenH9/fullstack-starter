@@ -2,6 +2,7 @@ import * as inventoryDuck from '../ducks/inventory'
 import * as productDuck from '../ducks/products'
 import Checkbox from '@material-ui/core/Checkbox'
 import Grid from '@material-ui/core/Grid'
+import InventoryDeleteModal from '../components/Inventory/InventoryDeleteModal'
 import InventoryFormModal from '../components/Inventory/InventoryFormModal'
 import { makeStyles } from '@material-ui/core/styles'
 import { MeasurementUnits } from '../constants/units'
@@ -53,6 +54,9 @@ const InventoryLayout = (props) => {
   const saveInventory = useCallback(item => {
     dispatch(inventoryDuck.saveInventory(item))
   }, [dispatch])
+  const removeInventory = useCallback(ids => {
+    ids.forEach(id => dispatch(inventoryDuck.removeInventory(id)))
+  }, [dispatch])
   useEffect(() => {
     if (!isFetched) {
       dispatch(inventoryDuck.findInventory())
@@ -65,6 +69,7 @@ const InventoryLayout = (props) => {
   const [orderBy, setOrderBy] = React.useState('calories')
   const [selected, setSelected] = React.useState([])
   const [isCreateOpen, setCreateOpen] = React.useState(false)
+  const [isDeleteOpen, setDeleteOpen] = React.useState(false)
 
   const toggleCreate = () => {
     setCreateOpen(true)
@@ -72,6 +77,17 @@ const InventoryLayout = (props) => {
 
   const closeCreate = () => {
     setCreateOpen(false)
+  }
+
+  const toggleDelete = () => {
+    setDeleteOpen(true)
+  }
+
+  const closeDelete = (resetSelected) => {
+    setDeleteOpen(false)
+    if (resetSelected) {
+      setSelected([])
+    }
   }
 
   const handleRequestSort = (event, property) => {
@@ -116,6 +132,7 @@ const InventoryLayout = (props) => {
           numSelected={selected.length}
           title='Inventory'
           toggleCreate={toggleCreate}
+          toggleDelete={toggleDelete}
         />
         <TableContainer component={Paper}>
           <Table size='small' stickyHeader>
@@ -175,6 +192,12 @@ const InventoryLayout = (props) => {
             bestBeforeDate: moment().format('YYYY-MM-DD'),
             neverExpires: false,
           }}
+        />
+        <InventoryDeleteModal
+          isDialogOpen={isDeleteOpen}
+          handleDelete={removeInventory}
+          handleDialog={closeDelete}
+          initialValues={selected}
         />
       </Grid>
     </Grid>
