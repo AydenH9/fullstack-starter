@@ -14,7 +14,7 @@ import { Field, Form, Formik } from 'formik'
 
 const validateInventory = (values) => {
   const errors = {}
-  if (!values.name.trim()) {
+  if (!(values.name ?? '').trim()) {
     errors.name = 'Name is required'
   }
   if (!values.productType) {
@@ -48,6 +48,7 @@ const InventoryFormModal = ({
     onClose={() => { handleDialog(false) }}
   >
     <Formik
+      enableReinitialize={true}
       initialValues={initialValues}
       validate={validateInventory}
       validateOnMount={true}
