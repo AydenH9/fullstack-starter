@@ -8,9 +8,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.IndexOperations;
-import org.springframework.util.Assert;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.util.Assert;
 
 /**
  * Inventory DAO
@@ -74,8 +74,14 @@ public class InventoryDAO {
    * @return Updated Inventory.
    */
   public Optional<Inventory> update(String id, Inventory inventory) {
-    // TODO
-    return Optional.empty();
+    Inventory existingInventory = this.mongoTemplate.findById(id, Inventory.class);
+    if (existingInventory == null) {
+      return Optional.empty();
+    }
+
+    inventory.setId(existingInventory.getId());
+    inventory.setVersion(existingInventory.getVersion());
+    return Optional.of(this.mongoTemplate.save(inventory));
   }
 
   /**
@@ -85,9 +91,9 @@ public class InventoryDAO {
    */
   public Optional<Inventory> delete(String id) {
     Inventory inventory = this.mongoTemplate.findAndRemove(
-      Query.query(Criteria.where("id").is(id)),
-      Inventory.class);
+        Query.query(Criteria.where("id").is(id)),
+        Inventory.class);
 
-  return Optional.ofNullable(inventory);
-}
+    return Optional.ofNullable(inventory);
+  }
 }

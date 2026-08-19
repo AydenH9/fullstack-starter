@@ -3,14 +3,16 @@ package com.starter.fullstack.rest;
 import com.starter.fullstack.api.Inventory;
 import com.starter.fullstack.dao.InventoryDAO;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import javax.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 /**
  * Inventory Controller.
@@ -49,6 +51,19 @@ public class InventoryController {
   }
 
   /**
+   * Update Inventory.
+   * @param id Inventory ID to Update.
+   * @param inventory Inventory Updates.
+   * @return Updated Inventory.
+   */
+  @PutMapping("/{id}")
+  public Inventory updateInventory(
+      @PathVariable String id,
+      @Valid @RequestBody Inventory inventory) {
+    return this.inventoryDAO.update(id, inventory).orElse(null);
+  }
+
+  /**
    * Delete Inventory.
    * @param id Inventory ID to Delete.
    * @return Deleted Inventory.
@@ -58,4 +73,3 @@ public class InventoryController {
     return this.inventoryDAO.delete(id).orElse(null);
   }
 }
-

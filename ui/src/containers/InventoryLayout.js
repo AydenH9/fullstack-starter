@@ -45,6 +45,20 @@ const headCells = [
   { id: 'bestBeforeDate', align: 'right', disablePadding: false, label: 'Best Before Date' },
 ]
 
+const inventoryFormValues = (inventory) => ({
+  ...inventory,
+  name: inventory.name ?? '',
+  productType: inventory.productType ?? '',
+  description: inventory.description ?? '',
+  averagePrice: inventory.averagePrice ?? 0,
+  amount: inventory.amount ?? 0,
+  unitOfMeasurement: inventory.unitOfMeasurement ?? '',
+  bestBeforeDate: inventory.bestBeforeDate
+    ? moment(inventory.bestBeforeDate).format('YYYY-MM-DD')
+    : '',
+  neverExpires: inventory.neverExpires ?? false,
+})
+
 const InventoryLayout = (props) => {
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -70,6 +84,7 @@ const InventoryLayout = (props) => {
   const [selected, setSelected] = React.useState([])
   const [isCreateOpen, setCreateOpen] = React.useState(false)
   const [isDeleteOpen, setDeleteOpen] = React.useState(false)
+  const [isEditOpen, setEditOpen] = React.useState(false)
 
   const toggleCreate = () => {
     setCreateOpen(true)
@@ -85,6 +100,17 @@ const InventoryLayout = (props) => {
 
   const closeDelete = (resetSelected) => {
     setDeleteOpen(false)
+    if (resetSelected) {
+      setSelected([])
+    }
+  }
+
+  const toggleEdit = () => {
+    setEditOpen(true)
+  }
+
+  const closeEdit = (resetSelected) => {
+    setEditOpen(false)
     if (resetSelected) {
       setSelected([])
     }
@@ -124,6 +150,7 @@ const InventoryLayout = (props) => {
   }
 
   const isSelected = (id) => selected.indexOf(id) !== -1
+  const selectedInventory = inventory.find(item => item.id === selected[0])
 
   return (
     <Grid container>
@@ -133,6 +160,7 @@ const InventoryLayout = (props) => {
           title='Inventory'
           toggleCreate={toggleCreate}
           toggleDelete={toggleDelete}
+          toggleEdit={toggleEdit}
         />
         <TableContainer component={Paper}>
           <Table size='small' stickyHeader>
@@ -198,6 +226,17 @@ const InventoryLayout = (props) => {
           handleDelete={removeInventory}
           handleDialog={closeDelete}
           initialValues={selected}
+        />
+        <InventoryFormModal
+          title='Edit'
+          formName='inventoryEdit'
+          isDialogOpen={isEditOpen}
+          handleDialog={closeEdit}
+          handleInventory={saveInventory}
+          products={products}
+          initialValues={selectedInventory
+            ? inventoryFormValues(selectedInventory)
+            : inventoryFormValues({})}
         />
       </Grid>
     </Grid>

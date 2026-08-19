@@ -22,9 +22,13 @@ export const findInventory = createAction(actions.INVENTORY_GET_ALL, () =>
 )
 
 export const saveInventory = createAction(actions.INVENTORY_SAVE, (inventory) =>
-  (dispatch, getState, config) => axios
-    .post(`${config.restAPIUrl}/inventory`, inventory)
-    .then((suc) => {
+  (dispatch, getState, config) => {
+    const inventoryUrl = `${config.restAPIUrl}/inventory`
+    const request = inventory.id
+      ? axios.put(`${inventoryUrl}/${inventory.id}`, inventory)
+      : axios.post(inventoryUrl, inventory)
+
+    return request.then((suc) => {
       const invs = []
 
       getState().inventory.all.forEach(inv => {
@@ -38,6 +42,7 @@ export const saveInventory = createAction(actions.INVENTORY_SAVE, (inventory) =>
       dispatch(refreshInventory(invs))
       dispatch(openSuccess('Inventory successfully saved'))
     })
+  }
 )
 
 export const removeInventory = createAction(actions.INVENTORY_DELETE, (id) =>
