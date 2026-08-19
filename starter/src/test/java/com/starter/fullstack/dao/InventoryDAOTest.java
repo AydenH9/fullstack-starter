@@ -2,6 +2,7 @@ package com.starter.fullstack.dao;
 
 import com.starter.fullstack.api.Inventory;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Resource;
 import org.junit.After;
 import org.junit.Assert;
@@ -65,12 +66,40 @@ public class InventoryDAOTest {
     Inventory actualInventory = this.inventoryDAO.create(inventory);
     Assert.assertNotNull(actualInventory);
     Assert.assertNotNull(actualInventory.getId());
-    Assert.assertNotNull("existing-id", actualInventory.getId());
+    Assert.assertNotEquals("existing-id", actualInventory.getId());
     Assert.assertEquals(NAME, actualInventory.getName());
     Assert.assertEquals(PRODUCT_TYPE, actualInventory.getProductType());
     Inventory savedInventory = this.mongoTemplate.findById(actualInventory.getId(), Inventory.class);
     Assert.assertNotNull(savedInventory);
     Assert.assertEquals(NAME, savedInventory.getName());
     Assert.assertEquals(PRODUCT_TYPE, savedInventory.getProductType());
+  }
+
+  /**
+   * Test Delete method.
+   */
+  @Test
+  public void delete() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    inventory = this.mongoTemplate.save(inventory);
+    Optional<Inventory> deletedInventory =
+        this.inventoryDAO.delete(inventory.getId());
+    Assert.assertTrue(deletedInventory.isPresent());
+    Assert.assertEquals(inventory.getId(), deletedInventory.get().getId());
+    Inventory actualInventory =
+        this.mongoTemplate.findById(inventory.getId(), Inventory.class);
+    Assert.assertNull(actualInventory);
+  }
+
+  /**
+   * Test Delete method with an invalid ID.
+   */
+  @Test
+  public void deleteNotFound() {
+    Optional<Inventory> deletedInventory =
+        this.inventoryDAO.delete("INVALID ID");
+    Assert.assertFalse(deletedInventory.isPresent());
   }
 }
